@@ -1,8 +1,11 @@
 [package]
-name = "untitled"
+name = "tor_parser"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
 reqwest = { version = "0.12.15", features = ["blocking", "rustls-tls"] }
-
+clap = { version = "4.5.37", features = ["derive"] }
+trust-dns-resolver = { version = "0.23", features = ["dns-over-https-rustls"] }
+tokio = { version = "1", features = ["full"] }
+url = "2"
