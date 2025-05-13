@@ -7,6 +7,7 @@ use std::io::{BufRead, BufReader, Write};
 use std::net::IpAddr;
 use std::process::Command;
 use url::Url;
+use fake_user_agent::get_rua;
 
 use trust_dns_resolver::{
     Resolver,
@@ -63,7 +64,7 @@ fn parse_html(url: &Url) -> Result<String, Box<dyn Error>> {
     let doh_ips = get_doh_ips(hostname)?;
     //println!("IP от DoH: {:?}", doh_ips);
 
-    let client = create_doh_client();
+    let client = create_client();
     let response = client.get(url.clone()).send()?;
     let actual_ip = response.remote_addr().ok_or("Не удалось получить IP")?;
 
@@ -117,9 +118,10 @@ fn update_torrc(path: &str, bridges: &Vec<String>) -> Result<(), Box<dyn Error>>
     Ok(())
 }
 
-fn create_doh_client() -> Client {
+fn create_client() -> Client {
     let client = Client::builder()
         .timeout(std::time::Duration::from_secs(30))
+        .user_agent(get_rua())
         .build()
         .unwrap();
 

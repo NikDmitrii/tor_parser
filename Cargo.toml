@@ -9,3 +9,4 @@ clap = { version = "4.5.37", features = ["derive"] }
 trust-dns-resolver = { version = "0.23", features = ["dns-over-https-rustls"] }
 tokio = { version = "1", features = ["full"] }
 url = "2"
+fake_user_agent = "0.2.1"

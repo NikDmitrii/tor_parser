@@ -273,6 +273,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "fake_user_agent"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eb698e419e0a497f072b9e58745448030989cba891478f9b523a39088b216ea8"
+dependencies = [
+ "fastrand",
+]
+
+[[package]]
 name = "fastrand"
 version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1662,6 +1671,7 @@ name = "tor_parser"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "fake_user_agent",
  "reqwest",
  "tokio",
  "trust-dns-resolver",
