@@ -2,6 +2,7 @@ use std::error::Error;
 use std::fs;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+use std::io::Write;
 
 pub fn update_torrc(path: &str, bridges: &Vec<String>) -> Result<(), Box<dyn Error>> {
     const USE_BRIDGE: &str = "UseBridges 1";

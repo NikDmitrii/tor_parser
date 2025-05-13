@@ -7,7 +7,6 @@ use cli::Args;
 use net::extract_bridges;
 use net::parse_html;
 use std::error::Error;
-use std::io::{BufRead, Write};
 use tor::restart_or_start_tor;
 use tor::update_torrc;
 use url::Url;
