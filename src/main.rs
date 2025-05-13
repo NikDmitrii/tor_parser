@@ -1,18 +1,54 @@
+use clap::Parser;
 use reqwest::blocking::Client;
 use std::error::Error;
 use std::fs;
-use std::fs::{File};
+use std::fs::File;
 use std::io::{BufRead, BufReader, Write};
 use std::net::IpAddr;
-use clap::Parser;
+use std::process::Command;
 use url::Url;
 
 use trust_dns_resolver::{
-    config::{ResolverConfig, ResolverOpts},
     Resolver,
+    config::{ResolverConfig, ResolverOpts},
 };
 
-fn get_doh_ips(host : &str) -> Result<Vec<IpAddr>, Box<dyn Error>>{
+fn restart_or_start_tor() -> Result<(), Box<dyn Error>> {
+    let status = Command::new("systemctl")
+        .arg("is-active")
+        .arg("tor")
+        .output()?;
+
+    let output = String::from_utf8_lossy(&status.stdout);
+
+    if output.trim() == "active" {
+        println!("🔄 Tor активен, перезапускаем...");
+        let result = Command::new("sudo")
+            .arg("systemctl")
+            .arg("restart")
+            .arg("tor")
+            .status()?;
+        if !result.success() {
+            return Err("Не удалось перезапустить Tor".into());
+        }
+        println!("✅ Tor перезапущен");
+    } else {
+        println!("⚠️ Tor не активен, пробуем запустить...");
+        let result = Command::new("sudo")
+            .arg("systemctl")
+            .arg("start")
+            .arg("tor")
+            .status()?;
+        if !result.success() {
+            return Err("Не удалось запустить Tor".into());
+        }
+        println!("✅ Tor запущен");
+    }
+
+    Ok(())
+}
+
+fn get_doh_ips(host: &str) -> Result<Vec<IpAddr>, Box<dyn Error>> {
     let config = ResolverConfig::cloudflare_https();
     let resolver = Resolver::new(config, ResolverOpts::default())?;
     let doh_ips: Vec<_> = resolver.lookup_ip(host)?.iter().collect();
@@ -102,6 +138,9 @@ struct Args {
 
     #[arg(short, long)]
     dry_run: bool,
+
+    #[arg(short = 'r', long = "restart")]
+    restart: bool,
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -125,7 +164,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     update_torrc(&args.torrc, &bridges)?;
 
-
     println!("Мосты обновлены");
+
+    if args.restart {
+        restart_or_start_tor()?;
+    }
+
     Ok(())
 }
