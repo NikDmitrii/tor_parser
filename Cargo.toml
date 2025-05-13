@@ -10,3 +10,5 @@ trust-dns-resolver = { version = "0.23", features = ["dns-over-https-rustls"] }
 tokio = { version = "1", features = ["full"] }
 url = "2"
 fake_user_agent = "0.2.1"
+flate2 = "1.1.1"
+brotli = "8.0.1"
